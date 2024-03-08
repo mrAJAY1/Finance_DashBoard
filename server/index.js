@@ -8,7 +8,10 @@ import morgan from "morgan";
 import kpiRoutes from "./routes/kpi.js";
 import productRoutes from "./routes/product.js";
 import transactionRoutes from "./routes/transaction.js";
-import Transaction from "./models/Transaction.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+// import Transaction from "./models/Transaction.js";
 // import KPI from "./models/KPI.js";
 // import Product from "./models/Product.js";
 // import { kpis, products, transactions } from "./data/data.js";
@@ -24,16 +27,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Then use __dirname as before
+app.use(express.static(path.join(__dirname, "../client", "dist")));
 // ROUTES
 app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
 app.use("/transaction", transactionRoutes);
 
-// serves static file from dist folder of client
-app.use(express.static(path.join(__dirname, "../client", "dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
-});
+if (process.env.NODE_ENV === "production") {
+  // serves static file from dist folder of client
+  app.use(express.static(path.join(__dirname, "../client", "dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 const PORT = process.env.PORT || 6000;
 

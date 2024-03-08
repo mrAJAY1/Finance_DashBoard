@@ -29,6 +29,12 @@ app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
 app.use("/transaction", transactionRoutes);
 
+// serves static file from dist folder of client
+app.use(express.static(path.join(__dirname, "../client", "dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+});
+
 const PORT = process.env.PORT || 6000;
 
 // MONGOOSE SETUP
@@ -47,4 +53,4 @@ mongoose
     // await Product.insertMany(products);
     // Transaction.insertMany(transactions)
   })
-  .catch(error => console.log(`${error} did not connect`));
+  .catch((error) => console.log(`${error} did not connect`));
